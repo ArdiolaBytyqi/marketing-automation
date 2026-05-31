@@ -1,26 +1,25 @@
 const { Sequelize } = require("sequelize");
 const mongoose = require("mongoose");
 
-// PostgreSQL
-const sequelize = new Sequelize(
-  process.env.PG_DATABASE,
-  process.env.PG_USER,
-  process.env.PG_PASSWORD,
-  {
-    host: process.env.PG_HOST,
-    port: process.env.PG_PORT,
-    dialect: "pg",
-    logging: false,
-  }
-);
+// PostgreSQL - Neon
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: "postgres",
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
+  logging: false,
+});
 
-// MongoDB
+// MongoDB - Atlas
 const connectMongo = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
     console.log("MongoDB connected");
   } catch (err) {
-    console.error("MongoDB error:", err);
+    console.error("MongoDB error:", err.message);
   }
 };
 

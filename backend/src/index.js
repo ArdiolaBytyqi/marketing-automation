@@ -1,4 +1,8 @@
 require("dotenv").config();
+require("./models/User");
+require("./models/Campaign");
+require("./models/Lead");
+require("./models/EmailLog");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -48,7 +52,8 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
   await connectMongo();
-  await sequelize.authenticate()
-    .then(() => console.log("PostgreSQL connected"))
-    .catch((err) => console.error("PostgreSQL error:", err));
+await sequelize.authenticate();
+console.log("PostgreSQL connected");
+await sequelize.sync({ alter: true });
+console.log("PostgreSQL tables synced");
 });
