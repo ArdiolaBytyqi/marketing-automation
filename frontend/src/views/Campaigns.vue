@@ -1,16 +1,15 @@
 <template>
-  <AppLayout title="Leads" subtitle="Track and manage your potential clients">
+  <AppLayout title="Campaigns" subtitle="Manage your marketing campaigns">
     <div class="toolbar">
-      <input v-model="search" placeholder="Search leads..." class="search-input" />
+      <input v-model="search" placeholder="Search campaigns..." class="search-input" />
       <select v-model="filterStatus" class="filter-select">
         <option value="">All Status</option>
-        <option value="new">New</option>
-        <option value="contacted">Contacted</option>
-        <option value="qualified">Qualified</option>
-        <option value="converted">Converted</option>
-        <option value="lost">Lost</option>
+        <option value="draft">Draft</option>
+        <option value="active">Active</option>
+        <option value="paused">Paused</option>
+        <option value="completed">Completed</option>
       </select>
-      <button @click="openModal()" class="btn-primary">+ New Lead</button>
+      <button @click="openModal()" class="btn-primary">+ New Campaign</button>
     </div>
 
     <div class="card">
@@ -18,30 +17,30 @@
       <table v-else class="table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
+            <th>Title</th>
             <th>Status</th>
-            <th>Notes</th>
+            <th>Budget</th>
+            <th>Start Date</th>
+            <th>End Date</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="lead in filtered" :key="lead.id">
-            <td class="font-medium">{{ lead.name }}</td>
-            <td>{{ lead.email }}</td>
-            <td>{{ lead.phone || "-" }}</td>
-            <td><span class="badge" :class="lead.status">{{ lead.status }}</span></td>
-            <td class="notes">{{ lead.notes || "-" }}</td>
+          <tr v-for="campaign in filtered" :key="campaign.id">
+            <td class="font-medium">{{ campaign.title }}</td>
+            <td><span class="badge" :class="campaign.status">{{ campaign.status }}</span></td>
+            <td>{{ campaign.budget ? '$' + campaign.budget : '-' }}</td>
+            <td>{{ campaign.startDate ? new Date(campaign.startDate).toLocaleDateString() : '-' }}</td>
+            <td>{{ campaign.endDate ? new Date(campaign.endDate).toLocaleDateString() : '-' }}</td>
             <td>
               <div class="actions">
-                <button @click="openModal(lead)" class="btn-edit">Edit</button>
-                <button @click="deleteLead(lead.id)" class="btn-delete">Delete</button>
+                <button @click="openModal(campaign)" class="btn-edit">Edit</button>
+                <button @click="deleteCampaign(campaign.id)" class="btn-delete">Delete</button>
               </div>
             </td>
           </tr>
           <tr v-if="filtered.length === 0">
-            <td colspan="6" class="empty">No leads found</td>
+            <td colspan="6" class="empty">No campaigns found</td>
           </tr>
         </tbody>
       </table>
@@ -51,48 +50,47 @@
     <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
       <div class="modal">
         <div class="modal-header">
-          <h3>{{ editingId ? "Edit Lead" : "New Lead" }}</h3>
+          <h3>{{ editingId ? "Edit Campaign" : "New Campaign" }}</h3>
           <button @click="showModal = false" class="modal-close">✕</button>
         </div>
         <div class="modal-body">
-          <div class="field-row">
-            <div class="field">
-              <label>Name</label>
-              <input v-model="form.name" placeholder="Full name" />
-            </div>
-            <div class="field">
-              <label>Email</label>
-              <input v-model="form.email" type="email" placeholder="email@example.com" />
-            </div>
+          <div class="field">
+            <label>Title</label>
+            <input v-model="form.title" placeholder="Campaign title" />
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <textarea v-model="form.description" placeholder="Campaign description..." rows="3" />
           </div>
           <div class="field-row">
-            <div class="field">
-              <label>Phone</label>
-              <input v-model="form.phone" placeholder="+383..." />
-            </div>
             <div class="field">
               <label>Status</label>
               <select v-model="form.status">
-                <option value="new">New</option>
-                <option value="contacted">Contacted</option>
-                <option value="qualified">Qualified</option>
-                <option value="converted">Converted</option>
-                <option value="lost">Lost</option>
+                <option value="draft">Draft</option>
+                <option value="active">Active</option>
+                <option value="paused">Paused</option>
+                <option value="completed">Completed</option>
               </select>
             </div>
+            <div class="field">
+              <label>Budget ($)</label>
+              <input v-model="form.budget" type="number" placeholder="0.00" />
+            </div>
           </div>
-          <div class="field">
-            <label>Campaign ID</label>
-            <input v-model="form.campaignId" placeholder="Campaign ID" />
-          </div>
-          <div class="field">
-            <label>Notes</label>
-            <textarea v-model="form.notes" placeholder="Notes about this lead..." rows="3" />
+          <div class="field-row">
+            <div class="field">
+              <label>Start Date</label>
+              <input v-model="form.startDate" type="date" />
+            </div>
+            <div class="field">
+              <label>End Date</label>
+              <input v-model="form.endDate" type="date" />
+            </div>
           </div>
         </div>
         <div class="modal-footer">
           <button @click="showModal = false" class="btn-ghost">Cancel</button>
-          <button @click="saveLead" class="btn-primary">Save Lead</button>
+          <button @click="saveCampaign" class="btn-primary">Save Campaign</button>
         </div>
       </div>
     </div>
@@ -100,61 +98,66 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted } from "vue";
 import AppLayout from "../components/AppLayout.vue";
 import api from "../api/index";
 
-const leads = ref([]);
+const campaigns = ref([]);
 const loading = ref(true);
 const showModal = ref(false);
 const editingId = ref(null);
 const search = ref("");
 const filterStatus = ref("");
 
-const form = ref({ name: "", email: "", phone: "", campaignId: "", status: "new", notes: "" });
+const form = ref({
+  title: "", description: "", status: "draft", budget: "", startDate: "", endDate: ""
+});
 
 const filtered = computed(() =>
-  leads.value.filter(l =>
-    (l.name.toLowerCase().includes(search.value.toLowerCase()) ||
-     l.email.toLowerCase().includes(search.value.toLowerCase())) &&
-    (filterStatus.value === "" || l.status === filterStatus.value)
+  campaigns.value.filter(c =>
+    c.title.toLowerCase().includes(search.value.toLowerCase()) &&
+    (filterStatus.value === "" || c.status === filterStatus.value)
   )
 );
 
-const fetchLeads = async () => {
+const fetchCampaigns = async () => {
   try {
     loading.value = true;
-    const res = await api.get("/leads");
-    leads.value = res.data.data;
+    const res = await api.get("/campaigns");
+    campaigns.value = res.data.data;
   } catch (err) { console.error(err); }
   finally { loading.value = false; }
 };
 
-const openModal = (lead = null) => {
-  editingId.value = lead?.id || null;
-  form.value = lead ? {
-    name: lead.name, email: lead.email, phone: lead.phone || "",
-    campaignId: lead.campaignId, status: lead.status, notes: lead.notes || "",
-  } : { name: "", email: "", phone: "", campaignId: "", status: "new", notes: "" };
+const openModal = (campaign = null) => {
+  editingId.value = campaign?.id || null;
+  form.value = campaign ? {
+    title: campaign.title,
+    description: campaign.description || "",
+    status: campaign.status,
+    budget: campaign.budget || "",
+    startDate: campaign.startDate ? campaign.startDate.split("T")[0] : "",
+    endDate: campaign.endDate ? campaign.endDate.split("T")[0] : "",
+  } : { title: "", description: "", status: "draft", budget: "", startDate: "", endDate: "" };
   showModal.value = true;
 };
 
-const saveLead = async () => {
+const saveCampaign = async () => {
   try {
-    if (editingId.value) await api.put(`/leads/${editingId.value}/status`, form.value);
-    else await api.post("/leads", form.value);
+    if (editingId.value) await api.put(`/campaigns/${editingId.value}`, form.value);
+    else await api.post("/campaigns", form.value);
     showModal.value = false;
-    await fetchLeads();
+    await fetchCampaigns();
   } catch (err) { console.error(err); }
 };
 
-const deleteLead = async (id) => {
+const deleteCampaign = async (id) => {
   if (!confirm("Are you sure?")) return;
-  try { await api.delete(`/leads/${id}`); await fetchLeads(); }
+  try { await api.delete(`/campaigns/${id}`); await fetchCampaigns(); }
   catch (err) { console.error(err); }
 };
 
-onMounted(fetchLeads);
+onMounted(fetchCampaigns);
 </script>
 
 <style scoped>
@@ -181,15 +184,13 @@ onMounted(fetchLeads);
 .table td { padding: 14px 0; border-bottom: 1px solid #f8faff; color: #374151; }
 .table tr:last-child td { border-bottom: none; }
 .font-medium { font-weight: 600; color: #0f172a; }
-.notes { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #94a3b8; font-size: 13px; }
 .empty { text-align: center; color: #94a3b8; padding: 32px 0; }
 
 .badge { padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-.badge.new { background: rgba(37,99,235,0.1); color: #2563eb; }
-.badge.contacted { background: rgba(245,158,11,0.1); color: #f59e0b; }
-.badge.qualified { background: rgba(124,58,237,0.1); color: #7c3aed; }
-.badge.converted { background: rgba(16,185,129,0.1); color: #10b981; }
-.badge.lost { background: rgba(239,68,68,0.1); color: #ef4444; }
+.badge.draft { background: rgba(100,116,139,0.1); color: #64748b; }
+.badge.active { background: rgba(16,185,129,0.1); color: #10b981; }
+.badge.paused { background: rgba(245,158,11,0.1); color: #f59e0b; }
+.badge.completed { background: rgba(37,99,235,0.1); color: #2563eb; }
 
 .actions { display: flex; gap: 8px; }
 .btn-edit { padding: 6px 12px; border-radius: 8px; border: none; background: rgba(37,99,235,0.08); color: #2563eb; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }

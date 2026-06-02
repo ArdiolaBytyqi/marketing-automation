@@ -1,5 +1,3 @@
-
-
 services:
   backend:
     build:
@@ -23,10 +21,40 @@ services:
       - "80:80"
     depends_on:
       - backend
-    restart: unless-stoppeds
+    restart: unless-stopped
+    networks:
+      - marketing-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: marketing-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: unless-stopped
+    networks:
+      - marketing-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: marketing-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
     networks:
       - marketing-network
 
 networks:
   marketing-network:
     driver: bridge
+
+volumes:
+  grafana-data:

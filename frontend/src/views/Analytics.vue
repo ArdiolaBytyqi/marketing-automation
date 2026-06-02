@@ -88,7 +88,7 @@ const campaignStatsCards = computed(() => {
 const fetchCampaignStats = async () => {
   if (!selectedCampaign.value) return;
   try {
-    const res = await api.get(`/analytics/${selectedCampaign.value}`);
+    const res = await api.get(`/analytics/campaigns/${selectedCampaign.value}`);
     campaignStats.value = res.data.data;
   } catch (err) { console.error(err); }
 };

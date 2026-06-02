@@ -89,9 +89,10 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
+import { ref, computed } from "vue";
 
 defineProps({ title: String, subtitle: String });
 
@@ -100,13 +101,18 @@ const auth = useAuthStore();
 const sidebarCollapsed = ref(false);
 const mobileOpen = ref(false);
 
-const menuItems = [
-  { name: "Dashboard", path: "/dashboard", icon: "📊" },
-  { name: "Campaigns", path: "/campaigns", icon: "📢" },
-  { name: "Leads", path: "/leads", icon: "👥" },
-  { name: "Analytics", path: "/analytics", icon: "📈" },
-  { name: "Users", path: "/users", icon: "⚙️" },
-];
+const menuItems = computed(() => {
+  const items = [
+    { name: "Dashboard", path: "/dashboard", icon: "📊" },
+    { name: "Campaigns", path: "/campaigns", icon: "📢" },
+    { name: "Leads", path: "/leads", icon: "👥" },
+    { name: "Analytics", path: "/analytics", icon: "📈" },
+  ];
+  if (auth.isAdmin) {
+    items.push({ name: "Users", path: "/users", icon: "⚙️" });
+  }
+  return items;
+});
 
 const handleLogout = () => {
   auth.logout();

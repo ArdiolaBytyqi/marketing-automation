@@ -81,10 +81,15 @@
               </select>
             </div>
           </div>
-          <div class="field">
-            <label>Campaign ID</label>
-            <input v-model="form.campaignId" placeholder="Campaign ID" />
-          </div>
+         <div class="field">
+  <label>Campaign</label>
+  <select v-model="form.campaignId">
+    <option value="">Select a campaign</option>
+    <option v-for="campaign in campaigns" :key="campaign.id" :value="campaign.id">
+      {{ campaign.title }}
+    </option>
+  </select>
+</div>
           <div class="field">
             <label>Notes</label>
             <textarea v-model="form.notes" placeholder="Notes about this lead..." rows="3" />
@@ -141,8 +146,14 @@ const openModal = (lead = null) => {
 
 const saveLead = async () => {
   try {
-    if (editingId.value) await api.put(`/leads/${editingId.value}/status`, form.value);
-    else await api.post("/leads", form.value);
+    if (editingId.value) {
+      await api.put(`/leads/${editingId.value}/status`, {
+        status: form.value.status,
+        notes: form.value.notes,
+      });
+    } else {
+      await api.post("/leads", form.value);
+    }
     showModal.value = false;
     await fetchLeads();
   } catch (err) { console.error(err); }
@@ -154,7 +165,20 @@ const deleteLead = async (id) => {
   catch (err) { console.error(err); }
 };
 
-onMounted(fetchLeads);
+const campaigns = ref([]);
+
+const fetchCampaigns = async () => {
+  try {
+    const res = await api.get("/campaigns");
+    campaigns.value = res.data.data;
+  } catch (err) { console.error(err); }
+};
+
+onMounted(() => {
+  fetchLeads();
+  fetchCampaigns();
+});
+
 </script>
 
 <style scoped>

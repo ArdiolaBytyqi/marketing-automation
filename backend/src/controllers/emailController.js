@@ -12,45 +12,24 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const emailQueue = require("../services/emailQueue");
+
 const sendEmail = async (req, res, next) => {
   try {
     const { leadId, campaignId, templateId } = req.body;
 
-    const lead = await Lead.findByPk(leadId);
-    if (!lead) {
-      return res.status(404).json({ message: "Lead not found" });
-    }
+    // Add to queue instead of sending directly
+    await emailQueue.add(
+      { leadId, campaignId, templateId },
+      {
+        attempts: 3,        // retry 3 here if fails
+        backoff: 5000,      // wait 5 seconds between retries
+        removeOnComplete: true,
+      }
+    );
 
-    const template = await EmailTemplate.findById(templateId);
-    if (!template) {
-      return res.status(404).json({ message: "Template not found" });
-    }
-
-    const body = template.body.replace("{{name}}", lead.name);
-
-    await transporter.sendMail({
-      from: process.env.MAIL_USER,
-      to: lead.email,
-      subject: template.subject,
-      html: body,
-    });
-
-    await EmailLog.create({
-      leadId,
-      campaignId,
-      subject: template.subject,
-      status: "sent",
-      sentAt: new Date(),
-    });
-
-    res.json({ success: true, message: "Email sent successfully" });
+    res.json({ success: true, message: "Email queued successfully" });
   } catch (err) {
-    await EmailLog.create({
-      leadId: req.body.leadId,
-      campaignId: req.body.campaignId,
-      subject: "Unknown",
-      status: "failed",
-    });
     next(err);
   }
 };

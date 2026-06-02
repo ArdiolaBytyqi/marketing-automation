@@ -7,8 +7,8 @@
           <span class="logo-text">MarketingAuto</span>
         </router-link>
         <div class="left-content">
-          <h2>Welcome back</h2>
-          <p>Sign in to your account to continue managing your campaigns.</p>
+          <h2>{{ isRegister ? "Get started" : "Welcome back" }}</h2>
+          <p>{{ isRegister ? "Create your account and start managing campaigns." : "Sign in to your account to continue managing your campaigns." }}</p>
           <div class="testimonial">
             <p class="quote">"MarketingAuto doubled our lead conversion in just 3 months."</p>
             <div class="author">
@@ -31,8 +31,13 @@
 
     <div class="right">
       <div class="form-box">
-        <h1>Sign In</h1>
-        <p class="form-sub">Enter your credentials to access your dashboard</p>
+        <h1>{{ isRegister ? "Create Account" : "Sign In" }}</h1>
+        <p class="form-sub">{{ isRegister ? "Fill in your details to get started" : "Enter your credentials to access your dashboard" }}</p>
+
+        <div v-if="isRegister" class="field">
+          <label>Full Name</label>
+          <input v-model="name" type="text" placeholder="John Doe" />
+        </div>
 
         <div class="field">
           <label>Email</label>
@@ -46,9 +51,16 @@
 
         <p v-if="error" class="error">{{ error }}</p>
 
-        <button @click="handleLogin" :disabled="loading" class="submit-btn">
-          {{ loading ? "Signing in..." : "Sign In →" }}
+        <button @click="isRegister ? handleRegister() : handleLogin()" :disabled="loading" class="submit-btn">
+          {{ loading ? "Please wait..." : isRegister ? "Create Account →" : "Sign In →" }}
         </button>
+
+        <p class="toggle-link">
+          {{ isRegister ? "Already have an account?" : "Don't have an account?" }}
+          <a @click="isRegister = !isRegister; error = ''">
+            {{ isRegister ? "Sign In" : "Register" }}
+          </a>
+        </p>
 
         <p class="back-link">
           <router-link to="/">← Back to Home</router-link>
@@ -65,6 +77,8 @@ import { useAuthStore } from "../stores/auth";
 
 const router = useRouter();
 const auth = useAuthStore();
+const isRegister = ref(false);
+const name = ref("");
 const email = ref("");
 const password = ref("");
 const error = ref("");
@@ -88,23 +102,30 @@ const handleLogin = async () => {
     loading.value = false;
   }
 };
+
+const handleRegister = async () => {
+  try {
+    loading.value = true;
+    error.value = "";
+    await auth.register(name.value, email.value, password.value);
+    router.push("/dashboard");
+  } catch (err) {
+    error.value = err.response?.data?.message || "Registration failed";
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+.root { display: flex; min-height: 100vh; font-family: 'DM Sans', sans-serif; }
 
-.root {
-  display: flex; min-height: 100vh;
-  font-family: 'DM Sans', sans-serif;
-}
-
-/* LEFT */
 .left {
   width: 45%; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #0f172a 100%);
-  padding: 40px; display: flex; flex-direction: column;
-  position: relative; overflow: hidden;
+  padding: 40px; display: flex; flex-direction: column; position: relative; overflow: hidden;
 }
 .left::before {
   content: ''; position: absolute; inset: 0;
@@ -144,7 +165,6 @@ const handleLogin = async () => {
 .lst-val { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: #fff; }
 .lst-label { font-size: 12px; color: #64748b; }
 
-/* RIGHT */
 .right {
   flex: 1; display: flex; align-items: center; justify-content: center;
   padding: 40px 24px; background: #f8faff;
@@ -155,7 +175,6 @@ const handleLogin = async () => {
   color: #0f172a; margin-bottom: 8px;
 }
 .form-sub { font-size: 15px; color: #64748b; margin-bottom: 36px; }
-
 .field { margin-bottom: 20px; }
 .field label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 8px; }
 .field input {
@@ -165,20 +184,19 @@ const handleLogin = async () => {
 }
 .field input:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37,99,235,0.08); }
 .field input::placeholder { color: #cbd5e1; }
-
 .error { color: #ef4444; font-size: 13px; margin-bottom: 16px; }
-
 .submit-btn {
   width: 100%; padding: 16px; border-radius: 12px; border: none; cursor: pointer;
   font-size: 16px; font-weight: 700; font-family: 'Syne', sans-serif;
   background: linear-gradient(135deg, #2563eb, #7c3aed);
   color: #fff; transition: all 0.2s;
-  box-shadow: 0 8px 24px rgba(37,99,235,0.3);
-  margin-bottom: 24px;
+  box-shadow: 0 8px 24px rgba(37,99,235,0.3); margin-bottom: 24px;
 }
 .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 32px rgba(37,99,235,0.4); }
 .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
+.toggle-link { text-align: center; font-size: 14px; color: #64748b; margin-bottom: 16px; }
+.toggle-link a { color: #2563eb; font-weight: 600; cursor: pointer; margin-left: 4px; }
+.toggle-link a:hover { text-decoration: underline; }
 .back-link { text-align: center; }
 .back-link a { font-size: 14px; color: #64748b; text-decoration: none; transition: color 0.2s; }
 .back-link a:hover { color: #2563eb; }
