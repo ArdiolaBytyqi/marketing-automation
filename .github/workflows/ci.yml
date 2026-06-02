@@ -22,16 +22,15 @@ jobs:
           cache: "npm"
           cache-dependency-path: backend/package-lock.json
 
-      - name: Install dependencies
+    - name: Install dependencies
         run: |
           cd backend
-          npm install
-          node node_modules/.bin/jest --forceExit --detectOpenHandles
+          npm ci --legacy-peer-deps
 
       - name: Run tests
         run: |
           cd backend
-          npx jest --forceExit --detectOpenHandles
+          npx --yes jest --forceExit --detectOpenHandles
 
   build:
     name: Build Docker Images
