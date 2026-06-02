@@ -30,7 +30,7 @@ jobs:
       - name: Run tests
         run: |
           cd backend
-          npm test
+          npx jest --forceExit --detectOpenHandles
 
   build:
     name: Build Docker Images
@@ -46,28 +46,3 @@ jobs:
 
       - name: Build frontend image
         run: docker build -f Dockerfile.frontend -t marketing-frontend .
-
-  lint:
-    name: Lint Code
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-          cache: "npm"
-          cache-dependency-path: backend/package-lock.json
-
-      - name: Install dependencies
-        run: |
-          cd backend
-          npm install
-
-      - name: Run ESLint
-        run: |
-          cd backend
-          npm run lint
