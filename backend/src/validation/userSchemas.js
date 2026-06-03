@@ -15,8 +15,10 @@ const update = Joi.object({
     }),
   role: Joi.string().valid("admin", "marketer", "client").optional(),
   isActive: Joi.boolean().optional(),
-}).min(1).messages({
-  "object.min": "At least one field must be provided to update",
-});
+})
+  .min(1)
+  .messages({
+    "object.min": "At least one field must be provided to update",
+  });
 
 module.exports = { update };

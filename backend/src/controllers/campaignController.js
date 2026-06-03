@@ -5,15 +5,19 @@ const getAll = async (req, res, next) => {
   try {
     const cached = await redisClient.get("campaigns");
     if (cached) {
-      return res.json({ success: true, data: JSON.parse(cached), fromCache: true });
+      return res.json({
+        success: true,
+        data: JSON.parse(cached),
+        fromCache: true,
+      });
     }
 
     const campaigns = await Campaign.findAll();
     await redisClient.setEx("campaigns", 300, JSON.stringify(campaigns));
 
-    res.json({ success: true, data: campaigns });
+    return res.json({ success: true, data: campaigns });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -23,9 +27,9 @@ const getOne = async (req, res, next) => {
     if (!campaign) {
       return res.status(404).json({ message: "Campaign not found" });
     }
-    res.json({ success: true, data: campaign });
+    return res.json({ success: true, data: campaign });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -44,9 +48,9 @@ const create = async (req, res, next) => {
 
     await redisClient.del("campaigns");
 
-    res.status(201).json({ success: true, data: campaign });
+    return res.status(201).json({ success: true, data: campaign });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -60,9 +64,9 @@ const update = async (req, res, next) => {
     await campaign.update(req.body);
     await redisClient.del("campaigns");
 
-    res.json({ success: true, data: campaign });
+    return res.json({ success: true, data: campaign });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -76,9 +80,9 @@ const remove = async (req, res, next) => {
     await campaign.destroy();
     await redisClient.del("campaigns");
 
-    res.json({ success: true, message: "Campaign deleted" });
+    return res.json({ success: true, message: "Campaign deleted" });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 

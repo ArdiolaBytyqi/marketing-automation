@@ -7,7 +7,9 @@ const create = Joi.object({
     "any.required": "Title is required",
   }),
   description: Joi.string().max(2000).trim().allow("", null).optional(),
-  status: Joi.string().valid("draft", "active", "paused", "completed").default("draft"), 
+  status: Joi.string()
+    .valid("draft", "active", "paused", "completed")
+    .default("draft"),
   startDate: Joi.date().iso().optional().messages({
     "date.format": "startDate must be a valid ISO date",
   }),
@@ -23,12 +25,16 @@ const create = Joi.object({
 const update = Joi.object({
   title: Joi.string().min(2).max(200).trim().optional(),
   description: Joi.string().max(2000).trim().allow("", null).optional(),
-  status: Joi.string().valid("draft", "active", "paused", "completed").optional(),
+  status: Joi.string()
+    .valid("draft", "active", "paused", "completed")
+    .optional(),
   startDate: Joi.date().iso().optional(),
   endDate: Joi.date().iso().optional(),
   budget: Joi.number().min(0).precision(2).optional(),
-}).min(1).messages({
-  "object.min": "At least one field must be provided to update",
-});
+})
+  .min(1)
+  .messages({
+    "object.min": "At least one field must be provided to update",
+  });
 
 module.exports = { create, update };

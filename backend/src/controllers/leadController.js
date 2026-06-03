@@ -9,9 +9,9 @@ const getAll = async (req, res, next) => {
     if (status) where.status = status;
 
     const leads = await Lead.findAll({ where });
-    res.json({ success: true, data: leads });
+    return res.json({ success: true, data: leads });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -21,9 +21,9 @@ const getOne = async (req, res, next) => {
     if (!lead) {
       return res.status(404).json({ message: "Lead not found" });
     }
-    res.json({ success: true, data: lead });
+    return res.json({ success: true, data: lead });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -40,9 +40,9 @@ const create = async (req, res, next) => {
       assignedTo: req.user.id,
     });
 
-    res.status(201).json({ success: true, data: lead });
+    return res.status(201).json({ success: true, data: lead });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -54,9 +54,9 @@ const updateStatus = async (req, res, next) => {
     }
 
     await lead.update({ status: req.body.status, notes: req.body.notes });
-    res.json({ success: true, data: lead });
+    return res.json({ success: true, data: lead });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -68,9 +68,9 @@ const remove = async (req, res, next) => {
     }
 
     await lead.destroy();
-    res.json({ success: true, message: "Lead deleted" });
+    return res.json({ success: true, message: "Lead deleted" });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 

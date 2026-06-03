@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { getCampaignStats, getOverview } = require("../controllers/analyticsController");
+const {
+  getCampaignStats,
+  getOverview,
+} = require("../controllers/analyticsController");
 const auth = require("../middleware/auth");
 
 /**
@@ -36,6 +39,10 @@ router.get("/overview", auth("admin", "marketer"), getOverview);
  *       404:
  *         description: Campaign not found
  */
-router.get("/campaigns/:campaignId", auth("admin", "marketer"), getCampaignStats);
+router.get(
+  "/campaigns/:campaignId",
+  auth("admin", "marketer"),
+  getCampaignStats
+);
 
 module.exports = router;

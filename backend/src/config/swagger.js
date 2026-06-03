@@ -7,7 +7,8 @@ const options = {
     info: {
       title: "Marketing Automation API",
       version: "1.0.0",
-      description: "REST API for managing campaigns, leads, and email automation",
+      description:
+        "REST API for managing campaigns, leads, and email automation",
     },
     servers: [
       {
@@ -30,7 +31,5 @@ const options = {
 };
 
 const swaggerSpec = swaggerJsdoc(options);
-
-
 
 module.exports = swaggerSpec;

@@ -186,3 +186,6 @@
 {"duration":"3ms","ip":"::ffff:127.0.0.1","level":"info","message":"API Request","method":"PUT","statusCode":400,"timestamp":"2026-06-02 23:40:14","url":"/api/v1/leads/550e8400-e29b-41d4-a716-446655440001/status","userAgent":"unknown","userId":"550e8400-e29b-41d4-a716-446655440000","userRole":"admin"}
 {"duration":"8ms","ip":"::ffff:127.0.0.1","level":"info","message":"API Request","method":"POST","statusCode":400,"timestamp":"2026-06-02 23:40:14","url":"/api/v1/auth/register","userAgent":"unknown","userId":"anonymous","userRole":"none"}
 {"duration":"5ms","ip":"::ffff:127.0.0.1","level":"info","message":"API Request","method":"POST","statusCode":400,"timestamp":"2026-06-02 23:40:14","url":"/api/v1/auth/login","userAgent":"unknown","userId":"anonymous","userRole":"none"}
+{"level":"info","message":"Server running on port 3000","timestamp":"2026-06-03 01:57:48"}
+{"level":"info","message":"PostgreSQL connected","timestamp":"2026-06-03 01:58:00"}
+{"level":"info","message":"PostgreSQL tables synced","timestamp":"2026-06-03 01:58:02"}

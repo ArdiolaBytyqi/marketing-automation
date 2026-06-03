@@ -1,6 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { getAll, getOne, create, updateStatus, remove } = require("../controllers/leadController");
+const {
+  getAll,
+  getOne,
+  create,
+  updateStatus,
+  remove,
+} = require("../controllers/leadController");
 const auth = require("../middleware/auth");
 const validate = require("../middleware/validate");
 const schemas = require("../validation/leadSchemas");
@@ -103,7 +109,12 @@ router.post("/", auth("admin", "marketer"), validate(schemas.create), create);
  *       404:
  *         description: Lead not found
  */
-router.put("/:id/status", auth("admin", "marketer"), validate(schemas.updateStatus), updateStatus);
+router.put(
+  "/:id/status",
+  auth("admin", "marketer"),
+  validate(schemas.updateStatus),
+  updateStatus
+);
 
 /**
  * @swagger

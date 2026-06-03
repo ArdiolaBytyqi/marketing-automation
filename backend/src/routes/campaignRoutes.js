@@ -1,6 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { getAll, getOne, create, update, remove } = require("../controllers/campaignController");
+const {
+  getAll,
+  getOne,
+  create,
+  update,
+  remove,
+} = require("../controllers/campaignController");
 const auth = require("../middleware/auth");
 const validate = require("../middleware/validate");
 const schemas = require("../validation/campaignSchemas");

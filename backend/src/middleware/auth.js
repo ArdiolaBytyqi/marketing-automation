@@ -16,8 +16,8 @@ const auth = (...roles) => {
         return res.status(403).json({ message: "Access denied" });
       }
 
-      next();
-    } catch (err) {
+      return next();
+    } catch (_err) {
       return res.status(401).json({ message: "Invalid token" });
     }
   };

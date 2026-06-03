@@ -37,25 +37,30 @@ app.use(errorHandler);
 describe("Lead Routes", () => {
   describe("POST /api/v1/leads", () => {
     it("should return 400 if name is missing", async () => {
-      const res = await request(app)
-        .post("/api/v1/leads")
-        .send({ email: "test@test.com", campaignId: "550e8400-e29b-41d4-a716-446655440000" });
+      const res = await request(app).post("/api/v1/leads").send({
+        email: "test@test.com",
+        campaignId: "550e8400-e29b-41d4-a716-446655440000",
+      });
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
     });
 
     it("should return 400 if email is invalid", async () => {
-      const res = await request(app)
-        .post("/api/v1/leads")
-        .send({ name: "Test", email: "invalid", campaignId: "550e8400-e29b-41d4-a716-446655440000" });
+      const res = await request(app).post("/api/v1/leads").send({
+        name: "Test",
+        email: "invalid",
+        campaignId: "550e8400-e29b-41d4-a716-446655440000",
+      });
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
     });
 
     it("should return 400 if campaignId is not UUID", async () => {
-      const res = await request(app)
-        .post("/api/v1/leads")
-        .send({ name: "Test", email: "test@test.com", campaignId: "not-a-uuid" });
+      const res = await request(app).post("/api/v1/leads").send({
+        name: "Test",
+        email: "test@test.com",
+        campaignId: "not-a-uuid",
+      });
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
     });

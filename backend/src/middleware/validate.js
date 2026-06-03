@@ -10,7 +10,7 @@ const validate = (schema) => {
       });
     }
 
-    next();
+    return next();
   };
 };
 

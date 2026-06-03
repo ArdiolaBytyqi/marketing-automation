@@ -21,19 +21,19 @@ const create = Joi.object({
     "string.guid": "campaignId must be a valid UUID",
     "any.required": "campaignId is required",
   }),
-   status: Joi.string()
+  status: Joi.string()
     .valid("new", "contacted", "qualified", "converted", "lost")
     .default("new"),
   notes: Joi.string().max(2000).trim().allow("", null).optional(),
 });
-
 
 const updateStatus = Joi.object({
   status: Joi.string()
     .valid("new", "contacted", "qualified", "converted", "lost")
     .required()
     .messages({
-      "any.only": "Status must be one of: new, contacted, qualified, converted, lost",
+      "any.only":
+        "Status must be one of: new, contacted, qualified, converted, lost",
       "any.required": "Status is required",
     }),
   notes: Joi.string().max(2000).trim().allow("", null).optional(),

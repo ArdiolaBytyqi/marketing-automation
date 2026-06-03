@@ -7,7 +7,7 @@ require("./models/EmailLog");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
+const { globalLimiter, apiLimiter } = require("./middleware/rateLimiter");
 const { sequelize, connectMongo } = require("./config/db");
 const errorHandler = require("./middleware/errorHandler");
 const auditLogger = require("./middleware/auditLogger");
@@ -35,11 +35,10 @@ app.use(auditLogger);
 app.use(metricsMiddleware);
 
 // Rate Limiting
-app.use(rateLimit({
-  windowMs: 60 * 1000,
-  max: 100,
-  message: "Too many requests, please try again later.",
-}));
+
+
+app.use(globalLimiter);
+app.use("/api", apiLimiter);
 
 // Swagger Docs
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

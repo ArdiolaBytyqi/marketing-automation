@@ -6,9 +6,9 @@ const getAll = async (req, res, next) => {
     const users = await User.findAll({
       attributes: { exclude: ["password"] },
     });
-    res.json({ success: true, data: users });
+    return res.json({ success: true, data: users });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -20,9 +20,9 @@ const getOne = async (req, res, next) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    res.json({ success: true, data: user });
+    return res.json({ success: true, data: user });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -39,12 +39,17 @@ const update = async (req, res, next) => {
 
     await user.update(req.body);
 
-    res.json({
+    return res.json({
       success: true,
-      data: { id: user.id, name: user.name, email: user.email, role: user.role },
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -56,9 +61,9 @@ const remove = async (req, res, next) => {
     }
 
     await user.destroy();
-    res.json({ success: true, message: "User deleted" });
+    return res.json({ success: true, message: "User deleted" });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 

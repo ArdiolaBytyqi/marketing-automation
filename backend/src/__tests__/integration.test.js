@@ -99,8 +99,9 @@ describe("Campaign Integration", () => {
   });
 
   it("GET /api/v1/campaigns/:id → should return one campaign", async () => {
-    const res = await request(app)
-      .get("/api/v1/campaigns/550e8400-e29b-41d4-a716-446655440000");
+    const res = await request(app).get(
+      "/api/v1/campaigns/550e8400-e29b-41d4-a716-446655440000"
+    );
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
   });
@@ -114,8 +115,9 @@ describe("Campaign Integration", () => {
   });
 
   it("DELETE /api/v1/campaigns/:id → should delete campaign", async () => {
-    const res = await request(app)
-      .delete("/api/v1/campaigns/550e8400-e29b-41d4-a716-446655440000");
+    const res = await request(app).delete(
+      "/api/v1/campaigns/550e8400-e29b-41d4-a716-446655440000"
+    );
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
   });
@@ -131,14 +133,12 @@ describe("Lead Integration", () => {
   });
 
   it("POST /api/v1/leads → should create lead", async () => {
-    const res = await request(app)
-      .post("/api/v1/leads")
-      .send({
-        name: "John Doe",
-        email: "john@test.com",
-        campaignId: "550e8400-e29b-41d4-a716-446655440000",
-        status: "new",
-      });
+    const res = await request(app).post("/api/v1/leads").send({
+      name: "John Doe",
+      email: "john@test.com",
+      campaignId: "550e8400-e29b-41d4-a716-446655440000",
+      status: "new",
+    });
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
   });

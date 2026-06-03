@@ -3,17 +3,21 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
- "scripts": {
-  "start": "node src/index.js",
-  "dev": "nodemon src/index.js",
-  "test": "jest --forceExit --detectOpenHandles",
-  "test:watch": "jest --watch",
-  "lint": "eslint src/**/*.js --max-warnings=0"
-},
-"jest": {
-  "testEnvironment": "node",
-  "testMatch": ["**/__tests__/**/*.test.js"]
-},
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest --forceExit --detectOpenHandles",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.js --max-warnings=0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write ."
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/__tests__/**/*.test.js"
+    ]
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

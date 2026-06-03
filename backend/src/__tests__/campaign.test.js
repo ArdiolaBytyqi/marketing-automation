@@ -64,9 +64,7 @@ describe("Campaign Routes", () => {
 
   describe("PUT /api/v1/campaigns/:id", () => {
     it("should return 400 if no fields provided", async () => {
-      const res = await request(app)
-        .put("/api/v1/campaigns/some-id")
-        .send({});
+      const res = await request(app).put("/api/v1/campaigns/some-id").send({});
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
     });

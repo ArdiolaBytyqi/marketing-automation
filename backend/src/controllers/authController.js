@@ -30,13 +30,18 @@ const register = async (req, res, next) => {
 
     const token = generateToken(user);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       token,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -56,13 +61,18 @@ const login = async (req, res, next) => {
 
     const token = generateToken(user);
 
-    res.json({
+    return res.json({
       success: true,
       token,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -71,9 +81,9 @@ const getMe = async (req, res, next) => {
     const user = await User.findByPk(req.user.id, {
       attributes: { exclude: ["password"] },
     });
-    res.json({ success: true, user });
+    return res.json({ success: true, user });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 

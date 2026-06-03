@@ -4,6 +4,7 @@ const { register, login, getMe } = require("../controllers/authController");
 const auth = require("../middleware/auth");
 const validate = require("../middleware/validate");
 const schemas = require("../validation/authSchemas");
+const { authLimiter } = require("../middleware/rateLimiter");
 
 /**
  * @swagger
@@ -35,7 +36,7 @@ const schemas = require("../validation/authSchemas");
  *       400:
  *         description: Validation error
  */
-router.post("/register", validate(schemas.register), register);
+router.post("/register", authLimiter, validate(schemas.register), register);
 
 /**
  * @swagger
@@ -62,7 +63,7 @@ router.post("/register", validate(schemas.register), register);
  *       401:
  *         description: Invalid credentials
  */
-router.post("/login", validate(schemas.login), login);
+router.post("/login", authLimiter, validate(schemas.login), login);
 
 /**
  * @swagger

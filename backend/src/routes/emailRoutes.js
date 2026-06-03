@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { sendEmail, getTemplates, createTemplate, getLogs } = require("../controllers/emailController");
+const {
+  sendEmail,
+  getTemplates,
+  createTemplate,
+  getLogs,
+} = require("../controllers/emailController");
 const auth = require("../middleware/auth");
 const validate = require("../middleware/validate");
 const schemas = require("../validation/emailSchemas");
@@ -33,7 +38,12 @@ const schemas = require("../validation/emailSchemas");
  *       400:
  *         description: Validation error
  */
-router.post("/send", auth("admin", "marketer"), validate(schemas.sendEmail), sendEmail);
+router.post(
+  "/send",
+  auth("admin", "marketer"),
+  validate(schemas.sendEmail),
+  sendEmail
+);
 
 /**
  * @swagger
@@ -75,7 +85,12 @@ router.get("/templates", auth("admin", "marketer"), getTemplates);
  *       201:
  *         description: Template created
  */
-router.post("/templates", auth("admin", "marketer"), validate(schemas.createTemplate), createTemplate);
+router.post(
+  "/templates",
+  auth("admin", "marketer"),
+  validate(schemas.createTemplate),
+  createTemplate
+);
 
 /**
  * @swagger

@@ -22,8 +22,8 @@ const sendEmail = async (req, res, next) => {
     await emailQueue.add(
       { leadId, campaignId, templateId },
       {
-        attempts: 3,        // retry 3 here if fails
-        backoff: 5000,      // wait 5 seconds between retries
+        attempts: 3, // retry 3 here if fails
+        backoff: 5000, // wait 5 seconds between retries
         removeOnComplete: true,
       }
     );

@@ -1,4 +1,7 @@
-const { httpRequestCounter, httpRequestDuration } = require("../config/metrics");
+const {
+  httpRequestCounter,
+  httpRequestDuration,
+} = require("../config/metrics");
 
 const metricsMiddleware = (req, res, next) => {
   const start = Date.now();

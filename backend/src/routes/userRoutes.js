@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { getAll, getOne, update, remove } = require("../controllers/userController");
+const {
+  getAll,
+  getOne,
+  update,
+  remove,
+} = require("../controllers/userController");
 const auth = require("../middleware/auth");
 const validate = require("../middleware/validate");
 const schemas = require("../validation/userSchemas");
