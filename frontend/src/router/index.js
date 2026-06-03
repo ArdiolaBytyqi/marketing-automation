@@ -8,15 +8,29 @@ import Campaigns from "../views/Campaigns.vue";
 import Leads from "../views/Leads.vue";
 import Analytics from "../views/Analytics.vue";
 import Users from "../views/Users.vue";
+import Emails from "../views/Emails.vue";
 
 const routes = [
   { path: "/", component: Home, meta: { public: true } },
   { path: "/login", component: Login, meta: { public: true } },
   { path: "/dashboard", component: Dashboard, meta: { requiresAuth: true } },
   { path: "/campaigns", component: Campaigns, meta: { requiresAuth: true } },
-  { path: "/leads", component: Leads, meta: { requiresAuth: true } },
+  {
+    path: "/leads",
+    component: Leads,
+    meta: { requiresAuth: true, noClient: true },
+  },
+  {
+    path: "/emails",
+    component: Emails,
+    meta: { requiresAuth: true, noClient: true },
+  },
   { path: "/analytics", component: Analytics, meta: { requiresAuth: true } },
-  { path: "/users", component: Users, meta: { requiresAuth: true, adminOnly: true } },
+  {
+    path: "/users",
+    component: Users,
+    meta: { requiresAuth: true, adminOnly: true },
+  },
 ];
 
 const router = createRouter({
@@ -35,11 +49,15 @@ router.beforeEach((to, from, next) => {
     return next("/dashboard");
   }
 
+  if (to.meta.noClient && auth.user?.role === "client") {
+    return next("/dashboard");
+  }
+
   if (to.path === "/login" && auth.token) {
     return next("/dashboard");
   }
 
-  next();
+  return next();
 });
 
 export default router;

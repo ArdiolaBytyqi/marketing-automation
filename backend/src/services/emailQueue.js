@@ -5,16 +5,15 @@ const EmailTemplate = require("../models/EmailTemplate");
 const Lead = require("../models/Lead");
 const logger = require("../config/logger");
 
-// Create queue
 const emailQueue = new Bull("email-queue", {
   redis: {
-    host: process.env.REDIS_HOST || "redis",
-    port: process.env.REDIS_PORT || 6379,
-    password: process.env.REDIS_PASSWORD || undefined,
+    host: "enormous-fawn-110739.upstash.io",
+    port: 6379,
+    password: "gQAAAAAAAbCTAAIgcDFjNDlhOWMxNzZjNTE0YmQ2YTI0Yjc0NTBlYmJhNTNiMA",
+    tls: {},
   },
 });
 
-// Nodemailer transporter
 const transporter = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
   port: process.env.MAIL_PORT,
@@ -24,7 +23,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Process jobs
 emailQueue.process(async (job) => {
   const { leadId, campaignId, templateId } = job.data;
 
@@ -34,7 +32,7 @@ emailQueue.process(async (job) => {
   const template = await EmailTemplate.findById(templateId);
   if (!template) throw new Error("Template not found");
 
-  const body = template.body.replace("{{name}}", lead.name);
+  const body = template.body.replace(/\{\{name\}\}/g, lead.name);
 
   await transporter.sendMail({
     from: process.env.MAIL_USER,
@@ -54,7 +52,6 @@ emailQueue.process(async (job) => {
   logger.info("Email sent", { leadId, campaignId });
 });
 
-// Handle failed jobs
 emailQueue.on("failed", async (job, err) => {
   logger.error("Email job failed", { jobId: job.id, error: err.message });
 

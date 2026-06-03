@@ -3,18 +3,14 @@ const redisClient = require("../config/redis");
 
 const getAll = async (req, res, next) => {
   try {
-    const cached = await redisClient.get("campaigns");
+    const cacheKey = "campaigns";
+    const cached = await redisClient.get(cacheKey);
     if (cached) {
-      return res.json({
-        success: true,
-        data: JSON.parse(cached),
-        fromCache: true,
-      });
+      return res.json({ success: true, data: JSON.parse(cached), fromCache: true });
     }
 
     const campaigns = await Campaign.findAll();
-    await redisClient.setEx("campaigns", 300, JSON.stringify(campaigns));
-
+    await redisClient.setEx(cacheKey, 300, JSON.stringify(campaigns));
     return res.json({ success: true, data: campaigns });
   } catch (err) {
     return next(err);
@@ -46,7 +42,7 @@ const create = async (req, res, next) => {
       createdBy: req.user.id,
     });
 
-    await redisClient.del("campaigns");
+    await redisClient.del(["campaigns", "campaigns:active"]);
 
     return res.status(201).json({ success: true, data: campaign });
   } catch (err) {
@@ -62,7 +58,7 @@ const update = async (req, res, next) => {
     }
 
     await campaign.update(req.body);
-    await redisClient.del("campaigns");
+   await redisClient.del(["campaigns", "campaigns:active"]);
 
     return res.json({ success: true, data: campaign });
   } catch (err) {
@@ -78,7 +74,7 @@ const remove = async (req, res, next) => {
     }
 
     await campaign.destroy();
-    await redisClient.del("campaigns");
+    await redisClient.del(["campaigns", "campaigns:active"]);
 
     return res.json({ success: true, message: "Campaign deleted" });
   } catch (err) {
@@ -86,4 +82,28 @@ const remove = async (req, res, next) => {
   }
 };
 
-module.exports = { getAll, getOne, create, update, remove };
+const getActive = async (req, res, next) => {
+  try {
+    const cacheKey = "campaigns:active";
+    const cached = await redisClient.get(cacheKey);
+    if (cached) {
+      return res.json({
+        success: true,
+        data: JSON.parse(cached),
+        fromCache: true,
+      });
+    }
+
+    const campaigns = await Campaign.findAll({
+      where: { status: "active" },
+      attributes: ["id", "title", "description", "startDate", "endDate"],
+    });
+
+    await redisClient.setEx(cacheKey, 300, JSON.stringify(campaigns));
+    return res.json({ success: true, data: campaigns });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+module.exports = { getAll, getOne, create, update, remove, getActive };

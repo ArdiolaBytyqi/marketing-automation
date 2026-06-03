@@ -6,11 +6,13 @@ const {
   create,
   update,
   remove,
+  getActive, 
 } = require("../controllers/campaignController");
 const auth = require("../middleware/auth");
 const validate = require("../middleware/validate");
 const schemas = require("../validation/campaignSchemas");
 
+router.get("/active", auth("admin", "marketer", "client"), getActive);
 /**
  * @swagger
  * /campaigns:

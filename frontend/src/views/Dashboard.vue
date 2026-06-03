@@ -3,7 +3,9 @@
     <!-- Stats Cards -->
     <div class="stats-grid">
       <div class="stat-card" v-for="stat in stats" :key="stat.label">
-        <div class="stat-icon" :style="{ background: stat.bg }">{{ stat.icon }}</div>
+        <div class="stat-icon" :style="{ background: stat.bg }">
+          {{ stat.icon }}
+        </div>
         <div class="stat-info">
           <p class="stat-label">{{ stat.label }}</p>
           <p class="stat-val">{{ stat.value }}</p>
@@ -30,9 +32,15 @@
         <tbody>
           <tr v-for="c in campaigns" :key="c.id">
             <td class="font-medium">{{ c.title }}</td>
-            <td><span class="badge" :class="c.status">{{ c.status }}</span></td>
+            <td>
+              <span class="badge" :class="c.status">{{ c.status }}</span>
+            </td>
             <td>${{ c.budget }}</td>
-            <td>{{ c.startDate ? new Date(c.startDate).toLocaleDateString() : "-" }}</td>
+            <td>
+              {{
+                c.startDate ? new Date(c.startDate).toLocaleDateString() : "-"
+              }}
+            </td>
           </tr>
           <tr v-if="campaigns.length === 0">
             <td colspan="4" class="empty">No campaigns yet</td>
@@ -76,39 +84,137 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap");
 
 .stats-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px; margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
 }
 .stat-card {
-  background: #fff; border-radius: 16px; padding: 24px;
-  border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 16px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 16px;
   transition: all 0.2s;
 }
-.stat-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.06); transform: translateY(-2px); }
-.stat-icon { width: 48px; height: 48px; border-radius: 12px; font-size: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.stat-label { font-size: 13px; color: #94a3b8; margin-bottom: 4px; }
-.stat-val { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: #0f172a; }
+.stat-card:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.stat-label {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+.stat-val {
+  font-family: "Syne", sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+}
 
-.card { background: #fff; border-radius: 16px; padding: 24px; border: 1px solid #f1f5f9; }
-.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-.card-header h3 { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: #0f172a; }
-.view-all { font-size: 13px; color: #2563eb; text-decoration: none; font-weight: 600; }
-.view-all:hover { text-decoration: underline; }
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid #f1f5f9;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.card-header h3 {
+  font-family: "Syne", sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.view-all {
+  font-size: 13px;
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+}
+.view-all:hover {
+  text-decoration: underline;
+}
 
-.loading { color: #94a3b8; font-size: 14px; }
-.table { width: 100%; border-collapse: collapse; font-size: 14px; }
-.table th { text-align: left; font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9; }
-.table td { padding: 14px 0; border-bottom: 1px solid #f8faff; color: #374151; }
-.table tr:last-child td { border-bottom: none; }
-.font-medium { font-weight: 600; color: #0f172a; }
-.empty { text-align: center; color: #94a3b8; padding: 32px 0; }
+.loading {
+  color: #94a3b8;
+  font-size: 14px;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.table th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.table td {
+  padding: 14px 0;
+  border-bottom: 1px solid #f8faff;
+  color: #374151;
+}
+.table tr:last-child td {
+  border-bottom: none;
+}
+.font-medium {
+  font-weight: 600;
+  color: #0f172a;
+}
+.empty {
+  text-align: center;
+  color: #94a3b8;
+  padding: 32px 0;
+}
 
-.badge { padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-.badge.active { background: rgba(16,185,129,0.1); color: #10b981; }
-.badge.draft { background: rgba(245,158,11,0.1); color: #f59e0b; }
-.badge.paused { background: rgba(239,68,68,0.1); color: #ef4444; }
-.badge.completed { background: rgba(100,116,139,0.1); color: #64748b; }
+.badge {
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.badge.active {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+.badge.draft {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+.badge.paused {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+.badge.completed {
+  background: rgba(100, 116, 139, 0.1);
+  color: #64748b;
+}
 </style>
